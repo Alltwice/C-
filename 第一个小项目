@@ -1,0 +1,361 @@
+using System;
+class Program
+{
+    static void Main(string[] args)
+    {
+        #region 初始项
+        Console.CursorVisible = false;
+        int w = 60, h = 40;
+        //窗口大小
+        Console.SetWindowSize(w, h);
+        Console.SetBufferSize(w, h);
+        int enviro = 1;
+        //场景变化，1主界面，2游戏界面，3结束界面；
+        //开始界面选择，1开始，2结束；       
+        bool remove = false;
+        int over = 3;
+        #endregion
+        #region 场景部分
+        while (true)
+        {
+            switch (enviro)
+            {
+                case 1:
+                    #region 场景开始
+                    int choosebegin = 0;
+                    Console.SetCursorPosition((w / 2) - 8, 8);
+                    Console.Write("我还没想好叫什么");
+                    Console.SetCursorPosition((w / 2) - 4, 10);
+                    Console.Write("ver.0.2");
+                    Console.SetCursorPosition(21, 25);
+                    Console.Write("WSAD操作，J建交互");
+                    while (true)
+                    {
+                        Console.SetCursorPosition((w / 2) - 2, 14);
+                        Console.ForegroundColor = choosebegin == 0 ? ConsoleColor.Red : ConsoleColor.White;
+                        Console.Write("开始");
+                        Console.SetCursorPosition((w / 2) - 2, 16);
+                        Console.ForegroundColor = choosebegin == 1 ? ConsoleColor.Red : ConsoleColor.White;
+                        Console.Write("结束");
+                        char c = Console.ReadKey(true).KeyChar;
+                        switch (c)
+                        {
+                            case 'w':
+                            case 'W':
+                                if (choosebegin > 0)
+                                {
+                                    choosebegin--;
+                                }
+                                break;
+                            case 's':
+                            case 'S':
+                                if (choosebegin < 1)
+                                {
+                                    choosebegin++;
+                                }
+                                break;
+                            case 'j':
+                            case 'J':
+                                if (choosebegin == 0)
+                                {
+                                    enviro = 2;
+                                    remove = true;
+
+                                }
+                                else
+                                {
+                                    Environment.Exit(0);
+                                }
+                                break;
+                        }
+                        if (remove == true)
+                        {
+                            break;
+                        }
+                    }
+                    break;
+                #endregion
+                case 2:
+                    #region 游戏场景
+                    Console.Clear();
+                    #region 场景搭建
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    for (int i = 0; i < w - 2; i += 2)
+                    {
+                        Console.SetCursorPosition(i, 1);
+                        Console.Write('墙');
+                        Console.SetCursorPosition(i, h - 1);
+                        Console.Write('墙');
+                        Console.SetCursorPosition(i, h - 9);
+                        Console.Write('墙');
+                    }
+                    for (int j = 0; j < h; j++)
+                    {
+                        Console.SetCursorPosition(0, j);
+                        Console.Write('墙');
+                        Console.SetCursorPosition(w - 2, j);
+                        Console.Write('墙');
+                    }
+                    #endregion
+                    #region 怪相关
+                    int bsx = 24;
+                    int bsy = 19;
+                    int bshp = 100;
+                    int bsatkmax = 13;
+                    int bsatkmin = 7;
+                    char boss = '怪';
+                    ConsoleColor bscolor = ConsoleColor.Magenta;
+                    #endregion
+                    #region 角色相关
+                    int px = 10;
+                    int py = 9;
+                    int php = 100;
+                    int patkmax = 13;
+                    int patkmin = 7;
+                    char player = '你';
+                    ConsoleColor pcolor = ConsoleColor.Yellow;
+                    int rx = 26, ry = 10;
+                    #endregion
+                    #region 移动,战斗相关
+                    char move;
+                    bool fit = false;
+                    bool gameOver = false;
+                    int doorx = 8, doory = 10;
+                    bool door = false, talk = false;
+                    while (true)
+                    {
+                        if (door == true && talk == true)
+                        {
+                            Console.SetCursorPosition(doorx, doory);
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.Write("门");
+                        }
+                        if (door == true && px == doorx && py == doory)
+                        {
+                            enviro = 3;
+                            gameOver = true;
+                            over = 1;
+                            break;
+                        }
+                        if (bshp > 0)
+                        {
+                            Console.ForegroundColor = bscolor;
+                            Console.SetCursorPosition(bsx, bsy);
+                            Console.Write(boss);
+                        }
+                        else
+                        {
+                            Console.SetCursorPosition(rx, ry);
+                            Console.ForegroundColor = ConsoleColor.Blue;
+                            Console.Write('人');
+                        }
+                        Console.ForegroundColor = pcolor;
+                        Console.SetCursorPosition(px, py);
+                        Console.Write(player);
+                        move = Console.ReadKey(true).KeyChar;
+                        Console.SetCursorPosition(px, py);
+                        Console.Write("  ");
+                        if (fit == false)
+                        {
+                            switch (move)
+                            {
+                                case 'w':
+                                case 'W':
+                                    py--;
+                                    if (py < 2)
+                                    {
+                                        py = 2;
+                                    }
+                                    else if ((px == bsx && py == bsy && bshp > 0) || (px == rx && py == ry))
+                                    {
+                                        py++;
+                                    }
+                                    break;
+                                case 's':
+                                case 'S':
+                                    py++;
+                                    if (py > 29)
+                                    {
+                                        py = 29;
+                                    }
+                                    else if ((px == bsx && py == bsy && bshp > 0) || (px == rx && py == ry))
+                                    {
+                                        py--;
+                                    }
+                                    break;
+                                case 'a':
+                                case 'A':
+                                    px -= 2;
+                                    if (px < 2)
+                                    {
+                                        px = 2;
+                                    }
+                                    else if ((px == bsx && py == bsy && bshp > 0) || (px == rx && py == ry))
+                                    {
+                                        px += 2;
+                                    }
+                                    break;
+                                case 'd':
+                                case 'D':
+                                    px += 2;
+                                    if (px > w - 4)
+                                    {
+                                        px = w - 4;
+                                    }
+                                    else if ((px == bsx && py == bsy && bshp > 0) || (px == rx && py == ry))
+                                    {
+                                        px -= 2;
+                                    }
+                                    break;
+                                case 'j':
+                                case 'J':
+
+                                    if (((px == bsx && py == bsy - 1 || py == bsy + 1) ||
+                                        (py == bsy && px == bsx - 2 || px == bsx + 2)) && bshp > 0)
+                                    {
+                                        fit = true;
+                                        Console.SetCursorPosition(4, h - 8);
+                                        Console.ForegroundColor = ConsoleColor.White;
+                                        Console.Write("战斗开始");
+                                        Console.SetCursorPosition(4, h - 7);
+                                        Console.Write("你当前的血量为{0}", php);
+                                        Console.SetCursorPosition(4, h - 6);
+                                        Console.Write("怪当前的血量为{0}", bshp);
+                                    }
+                                    else if ((((px == rx && py == ry - 1 || py == ry + 1) ||
+                                        (py == ry && px == rx - 2 || px == rx + 2)) && bshp < 0)) {
+                                        Console.SetCursorPosition(4, h - 8);
+                                        Console.Write("                                                   ");
+                                        Console.SetCursorPosition(4, h - 8);
+                                        Console.ForegroundColor = ConsoleColor.White;
+                                        Console.Write("所以这就是全部了，仅仅花了我7个小时的361行代码");
+                                        Console.SetCursorPosition(4, h - 6);
+                                        Console.Write("                                                    ");
+                                        Console.ReadKey(true);
+                                        Console.SetCursorPosition(4, h - 6);
+                                        Console.Write("只不过是学了两周C#后跟做出来的一个控制台小项目");
+                                        Console.ReadKey(true);
+                                        Console.SetCursorPosition(4, h - 8);
+                                        Console.Write("                                                   ");
+                                        Console.SetCursorPosition(4, h - 8);
+                                        Console.Write("本来有很多话要说");
+                                        Console.ReadKey(true);
+                                        Console.SetCursorPosition(4, h - 6);
+                                        Console.Write("                                                   ");
+                                        Console.SetCursorPosition(4, h - 6);
+                                        Console.Write("但全是情绪垃圾罢了");
+                                        Console.ReadKey(true);
+                                        Console.SetCursorPosition(4, h - 8);
+                                        Console.Write("                                                   ");
+                                        Console.SetCursorPosition(4, h - 8);
+                                        Console.Write("所以千言万语汇成一句");
+                                        Console.ReadKey(true);
+                                        Console.SetCursorPosition(4, h - 6);
+                                        Console.Write("                                                   ");
+                                        Console.SetCursorPosition(4, h - 6);
+                                        Console.Write("带着你的想法继续走下去啊！魂淡！");
+                                        door = true;
+                                        talk = true;
+                                    }
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            if (move == 'j' || move == 'J')
+                            {
+                                Random r = new Random();
+                                int patk = r.Next(patkmin, patkmax + 1);
+                                bshp -= patk;
+                                Random x = new Random();
+                                int batk = x.Next(bsatkmin, bsatkmax + 1);
+                                php -= batk;
+                                Console.ForegroundColor = ConsoleColor.Green;
+                                if (bshp <= 0)
+                                {
+                                    Console.ForegroundColor = ConsoleColor.White;
+                                    Console.SetCursorPosition(4, h - 8);
+                                    Console.Write("                                           ");
+                                    Console.SetCursorPosition(4, h - 7);
+                                    Console.Write("                                           ");
+                                    Console.SetCursorPosition(4, h - 6);
+                                    Console.Write("                                           ");
+                                    Console.SetCursorPosition(4, h - 5);
+                                    Console.Write("                                           ");
+                                    Console.SetCursorPosition(4, h - 4);
+                                    Console.Write("                                          ");
+                                    Console.SetCursorPosition(4, h - 8);
+                                    Console.Write("你对怪造成{0}点伤害，怪死亡，战斗胜利", patk);
+                                    Console.SetCursorPosition(bsx, bsy);
+                                    Console.Write("  ");
+                                    fit = false;
+                                }
+                                else if (php <= 0)
+                                {
+                                    Console.ForegroundColor = ConsoleColor.White;
+                                    Console.SetCursorPosition(4, h - 8);
+                                    Console.Write("                                           ");
+                                    Console.SetCursorPosition(4, h - 7);
+                                    Console.Write("                                           ");
+                                    Console.SetCursorPosition(4, h - 6);
+                                    Console.Write("                                           ");
+                                    Console.SetCursorPosition(4, h - 5);
+                                    Console.Write("                                           ");
+                                    Console.SetCursorPosition(4, h - 4);
+                                    Console.Write("                                          ");
+                                    Console.SetCursorPosition(4, h - 8);
+                                    Console.Write("怪对你造成{0}点伤害，很遗憾，战斗失败", batk);
+                                    over = 0;
+                                    enviro = 3;
+                                    gameOver = true;
+                                }
+                                else
+                                {
+                                    Console.SetCursorPosition(4, h - 5);
+                                    Console.Write("                                           ");
+                                    Console.SetCursorPosition(4, h - 5);
+                                    Console.Write("你对怪造成了{0}点伤害，怪还剩{1}点血量", patk, bshp);
+                                    Console.SetCursorPosition(4, h - 4);
+                                    Console.Write("                                          ");
+                                    Console.SetCursorPosition(4, h - 4);
+                                    Console.Write("怪对你造成了{0}点伤害,你还剩{1}点血量", batk, php);
+                                }
+                                if (gameOver == true)
+                                {
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    break;
+                #endregion
+                #endregion
+                case 3:
+                    if (over == 0)
+                    {
+                        Console.Clear();
+                        Console.SetCursorPosition(w / 2 - 8, h / 2 - 2);
+                        Console.Write("按任意键再次尝试");
+                        Console.ReadKey(true);
+                        enviro = 2;
+                        break;
+                    }
+                    if (over == 1)
+                    {
+                        Console.Clear();
+
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.SetCursorPosition(w / 2 - 4, h / 2 - 2);
+                        Console.Write("感谢游玩！");
+                        Console.SetCursorPosition(w / 2 - 8, h / 2 + 2);
+                        Console.Write("按任意键退出游戏");
+                        Console.ReadKey(true);
+                        Environment.Exit(0);
+                        break;
+                    }
+                    break;
+            }
+            #endregion
+        }
+    }
+}
